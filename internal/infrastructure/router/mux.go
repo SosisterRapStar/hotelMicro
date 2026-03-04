@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/adapter/controller"
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/config"
+	"github.com/SosisterRapStar/hotels/internal/adapter/controller"
+	"github.com/SosisterRapStar/hotels/internal/config"
 	chi "github.com/go-chi/chi/v5"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	httpSwagger "github.com/swaggo/http-swagger/v2"

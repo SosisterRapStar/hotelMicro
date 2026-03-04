@@ -1,10 +1,10 @@
 package app
 
 import (
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/adapter/controller"
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/adapter/controller/middleware"
-	v1 "github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/adapter/controller/v1"
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/config"
+	"github.com/SosisterRapStar/hotels/internal/adapter/controller"
+	"github.com/SosisterRapStar/hotels/internal/adapter/controller/middleware"
+	v1 "github.com/SosisterRapStar/hotels/internal/adapter/controller/v1"
+	"github.com/SosisterRapStar/hotels/internal/config"
 )
 
 type App struct{}

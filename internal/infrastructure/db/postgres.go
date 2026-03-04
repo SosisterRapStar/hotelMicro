@@ -1,7 +1,7 @@
 package db
 
 import (
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/config"
+	"github.com/SosisterRapStar/hotels/internal/config"
 	"github.com/jmoiron/sqlx"
 )
 

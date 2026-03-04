@@ -10,9 +10,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/app"
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/config"
-	"github.com/SosisterRapStar/LETI-PaperTestMicroservices/internal/infrastructure/router"
+	"github.com/SosisterRapStar/hotels/internal/app"
+	"github.com/SosisterRapStar/hotels/internal/config"
+	"github.com/SosisterRapStar/hotels/internal/infrastructure/router"
 )
 
 const shutdownTimeout = 10 * time.Second
