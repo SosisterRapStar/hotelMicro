@@ -24,7 +24,7 @@ prometheus:
 
 repository:
   hosts: "localhost:5432"
-  dbname: "orders_db"
+  dbname: "hotels_db"
   user: "postgres"
   password: "postgres"
   schema: ""

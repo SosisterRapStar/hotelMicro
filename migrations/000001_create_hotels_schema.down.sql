@@ -1,0 +1,3 @@
+DROP TABLE IF EXISTS hotel_bookings;
+DROP TABLE IF EXISTS hotel_rooms;
+DROP TABLE IF EXISTS hotels;
