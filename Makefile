@@ -1,6 +1,10 @@
 -include .env
 .EXPORT_ALL_VARIABLES:
 
+.PHONY: install-migrate
+install-migrate:
+	go install -tags 'mysql,postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+
 .PHONY: migration-create
 migration-create:
 	migrate create -ext sql -dir migrations -seq $(name)
@@ -12,6 +16,10 @@ migration-up:
 .PHONY: migration-down
 migration-down:
 	migrate -path migrations -database "$(MIGRATE_DSN)" down 1
+
+.PHONY: migration-force
+migration-force:
+	migrate -path migrations -database "$(MIGRATE_DSN)" force $(version)
 
 .PHONY: runp
 runp: 

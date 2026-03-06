@@ -51,10 +51,10 @@ type Prometheus struct {
 }
 
 type Repository struct {
-	Hosts    string `yaml:"hosts" env:"DB_HOSTS" env_default:"localhost:5432"`
+	Hosts    string `yaml:"hosts" env:"DB_HOSTS" env_default:"localhost:3306"`
 	Dbname   string `yaml:"dbname" env:"DB_NAME" env_default:"orders_db"`
-	User     string `yaml:"user" env:"DB_USER" env_default:"postgres"`
-	Password string `yaml:"password" env:"DB_PASSWORD" env_default:"postgres"`
+	User     string `yaml:"user" env:"DB_USER" env_default:"root"`
+	Password string `yaml:"password" env:"DB_PASSWORD" env_default:""`
 	Schema   string `yaml:"schema" env:"DB_SCHEMA"`
 
 	MaxIdleConn int `yaml:"max_idle_conn" env:"DB_MAX_IDLE_CONN" env_default:"5"`
@@ -81,27 +81,17 @@ func MustLoad(path string) *AppConfig {
 }
 
 func (r *Repository) DSN() string {
-	splitHosts := strings.Split(r.Hosts, ",")
+	return r.DSNMySQL()
+}
 
-	dsnHosts := make([]string, 0, len(splitHosts))
-	dsnPorts := make([]string, 0, len(splitHosts))
-
-	for _, host := range splitHosts {
-		splitHost := strings.Split(host, ":")
-		dsnHosts = append(dsnHosts, splitHost[0])
-		dsnPorts = append(dsnPorts, splitHost[1])
+// DSNMySQL возвращает DSN для подключения к MySQL.
+// Hosts: "host:port" или "host:3306", один или несколько через запятую (берётся первый).
+func (r *Repository) DSNMySQL() string {
+	host := "localhost:3306"
+	if r.Hosts != "" {
+		parts := strings.Split(r.Hosts, ",")
+		host = strings.TrimSpace(parts[0])
 	}
-
-	connStr := fmt.Sprintf(
-		"port=%s host=%s user=%s password=%s dbname=%s sslmode=disable target_session_attrs=read-write",
-		strings.Join(dsnPorts, ","),
-		strings.Join(dsnHosts, ","),
-		r.User,
-		r.Password,
-		r.Dbname,
-	)
-	if r.Schema != "" {
-		connStr += fmt.Sprintf(" search_path=%s", r.Schema)
-	}
-	return connStr
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&charset=utf8mb4",
+		r.User, r.Password, host, r.Dbname)
 }

@@ -23,11 +23,10 @@ prometheus:
   host: "localhost:2112"
 
 repository:
-  hosts: "localhost:5432"
-  dbname: "hotels_db"
-  user: "postgres"
-  password: "postgres"
-  schema: ""
+  hosts: "localhost:3306"
+  dbname: "mysql"
+  user: "mysql"
+  password: "mysql"
   max_idle_conn: 5
   max_open_conn: 10
   max_idle_lifetime: 5m

@@ -32,9 +32,11 @@ func main() {
 }
 
 func runServer(cfg *config.AppConfig) {
-	a := app.New()
-	controllers := a.GetControllers(cfg)
-	mux := router.NewMux(cfg, controllers)
+	a, err := app.New(cfg)
+	if err != nil {
+		log.Fatalf("building app: %v", err)
+	}
+	mux := router.NewMux(cfg, a.Controller)
 
 	srv := &http.Server{
 		Addr:              cfg.Server.Address,

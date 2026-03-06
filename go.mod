@@ -8,6 +8,7 @@ require (
 	github.com/IBM/sarama v1.46.3
 	github.com/SosisterRapStar/LETI-paper v0.0.0-00010101000000-000000000000
 	github.com/go-chi/chi/v5 v5.2.5
+	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/prometheus/client_golang v1.23.2
@@ -15,6 +16,8 @@ require (
 	github.com/swaggo/http-swagger/v2 v2.0.2
 	google.golang.org/protobuf v1.36.11
 )
+
+require filippo.io/edwards25519 v1.1.0 // indirect
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
@@ -29,6 +32,7 @@ require (
 	github.com/go-openapi/jsonreference v0.20.0 // indirect
 	github.com/go-openapi/spec v0.20.6 // indirect
 	github.com/go-openapi/swag v0.19.15 // indirect
+	github.com/go-sql-driver/mysql v1.8.1
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect

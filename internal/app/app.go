@@ -7,17 +7,17 @@ import (
 	"github.com/SosisterRapStar/hotels/internal/config"
 )
 
-type App struct{}
-
-func New() *App {
-	return &App{}
+type App struct {
+	Controller *controller.Controller
 }
 
-func (a *App) GetControllers(cfg *config.AppConfig) *controller.Controller {
-	return &controller.Controller{
-		Middleware: middleware.NewMiddleware(cfg),
-		V1: v1.Controller{
-			Dummy: v1.NewDummyController(),
+func New(cfg *config.AppConfig) (*App, error) {
+	return &App{
+		Controller: &controller.Controller{
+			Middleware: middleware.NewMiddleware(cfg),
+			V1: v1.Controller{
+				Dummy: v1.NewDummyController(),
+			},
 		},
-	}
+	}, nil
 }

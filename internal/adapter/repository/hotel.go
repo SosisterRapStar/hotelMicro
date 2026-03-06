@@ -5,19 +5,19 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/SosisterRapStar/hotels/internal/domain/hotel"
+	"github.com/google/uuid"
 	"github.com/jmoiron/sqlx"
+
+	"github.com/SosisterRapStar/hotels/internal/domain/hotel"
 )
 
 type HotelRepository struct {
-	db      *sqlx.DB
-	manager *Manager
+	db *sqlx.DB
 }
 
 func NewHotelRepository(db *sqlx.DB, manager *Manager) *HotelRepository {
 	return &HotelRepository{
-		db:      db,
-		manager: manager,
+		db: db,
 	}
 }
 
@@ -36,10 +36,15 @@ func (r *HotelRepository) execer(ctx context.Context) sqlx.ExecerContext {
 }
 
 func (r *HotelRepository) CreateHotel(ctx context.Context, input hotel.CreateHotelInput) (*hotel.Hotel, error) {
+	id := uuid.New().String()
+	execer := r.execer(ctx)
+	if _, err := execer.ExecContext(ctx, createHotelQuery, id, input.Name, input.City, input.Address); err != nil {
+		return nil, fmt.Errorf("executing create hotel query: %w", err)
+	}
 	row := hotel.Hotel{}
 	queryer := r.queryer(ctx)
-	if err := sqlx.GetContext(ctx, queryer, &row, createHotelQuery, input.Name, input.City, input.Address); err != nil {
-		return nil, fmt.Errorf("executing create hotel query: %w", err)
+	if err := sqlx.GetContext(ctx, queryer, &row, getHotelByIDQuery, id); err != nil {
+		return nil, fmt.Errorf("selecting created hotel: %w", err)
 	}
 	return &row, nil
 }
@@ -66,11 +71,16 @@ func (r *HotelRepository) ListHotels(ctx context.Context, params hotel.ListHotel
 }
 
 func (r *HotelRepository) CreateHotelRoom(ctx context.Context, input hotel.CreateHotelRoomInput) (*hotel.HotelRoom, error) {
+	id := uuid.New().String()
+	execer := r.execer(ctx)
+	if _, err := execer.ExecContext(ctx, createHotelRoomQuery,
+		id, input.HotelID, input.RoomType, input.RoomsTotal, input.RoomsAvailable, input.Price); err != nil {
+		return nil, fmt.Errorf("executing create hotel room query: %w", err)
+	}
 	row := hotel.HotelRoom{}
 	queryer := r.queryer(ctx)
-	if err := sqlx.GetContext(ctx, queryer, &row, createHotelRoomQuery,
-		input.HotelID, input.RoomType, input.RoomsTotal, input.RoomsAvailable, input.Price); err != nil {
-		return nil, fmt.Errorf("executing create hotel room query: %w", err)
+	if err := sqlx.GetContext(ctx, queryer, &row, getHotelRoomByIDQuery, id); err != nil {
+		return nil, fmt.Errorf("selecting created hotel room: %w", err)
 	}
 	return &row, nil
 }
@@ -97,11 +107,16 @@ func (r *HotelRepository) ListHotelRoomsByHotelID(ctx context.Context, hotelID s
 }
 
 func (r *HotelRepository) CreateHotelBooking(ctx context.Context, input hotel.CreateHotelBookingInput) (*hotel.HotelBooking, error) {
+	bookingID := uuid.New().String()
+	execer := r.execer(ctx)
+	if _, err := execer.ExecContext(ctx, createHotelBookingQuery,
+		bookingID, input.UserID, input.HotelID, input.RoomID, input.CheckIn, input.CheckOut, input.Status); err != nil {
+		return nil, fmt.Errorf("executing create hotel booking query: %w", err)
+	}
 	row := hotel.HotelBooking{}
 	queryer := r.queryer(ctx)
-	if err := sqlx.GetContext(ctx, queryer, &row, createHotelBookingQuery,
-		input.UserID, input.HotelID, input.RoomID, input.CheckIn, input.CheckOut, input.Status); err != nil {
-		return nil, fmt.Errorf("executing create hotel booking query: %w", err)
+	if err := sqlx.GetContext(ctx, queryer, &row, getHotelBookingByIDQuery, bookingID); err != nil {
+		return nil, fmt.Errorf("selecting created hotel booking: %w", err)
 	}
 	return &row, nil
 }
@@ -128,13 +143,22 @@ func (r *HotelRepository) ListHotelBookings(ctx context.Context, params hotel.Li
 }
 
 func (r *HotelRepository) UpdateHotelBookingStatus(ctx context.Context, id, status string) (*hotel.HotelBooking, error) {
+	execer := r.execer(ctx)
+	result, err := execer.ExecContext(ctx, updateHotelBookingStatusQuery, status, id)
+	if err != nil {
+		return nil, fmt.Errorf("executing update hotel booking status query: %w", err)
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return nil, fmt.Errorf("reading rows affected: %w", err)
+	}
+	if affected == 0 {
+		return nil, hotel.ErrHotelBookingNotFound
+	}
 	row := hotel.HotelBooking{}
 	queryer := r.queryer(ctx)
-	if err := sqlx.GetContext(ctx, queryer, &row, updateHotelBookingStatusQuery, status, id); err != nil {
-		if err == sql.ErrNoRows {
-			return nil, hotel.ErrHotelBookingNotFound
-		}
-		return nil, fmt.Errorf("executing update hotel booking status query: %w", err)
+	if err := sqlx.GetContext(ctx, queryer, &row, getHotelBookingByIDQuery, id); err != nil {
+		return nil, fmt.Errorf("selecting updated hotel booking: %w", err)
 	}
 	return &row, nil
 }
