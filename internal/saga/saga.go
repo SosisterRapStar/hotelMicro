@@ -78,6 +78,7 @@ func InitHotelSaga(
 	ctx context.Context,
 	db *sql.DB,
 	pubsub paperBroker.Pubsub,
+	tracing *controller.TracingConfig,
 ) (*HotelSaga, error) {
 	if db == nil {
 		return nil, fmt.Errorf("db is required")
@@ -108,6 +109,7 @@ func InitHotelSaga(
 		BackoffMin:    100 * time.Millisecond,
 		BackoffMax:    1 * time.Minute,
 		ErrCh:         errCh,
+		Tracing:       tracing,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("create controller: %w", err)

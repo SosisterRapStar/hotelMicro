@@ -13,6 +13,7 @@ import (
 	"github.com/SosisterRapStar/hotels/internal/app"
 	"github.com/SosisterRapStar/hotels/internal/config"
 	"github.com/SosisterRapStar/hotels/internal/infrastructure/router"
+	"github.com/SosisterRapStar/hotels/internal/infrastructure/telemetry"
 )
 
 const shutdownTimeout = 10 * time.Second
@@ -57,6 +58,9 @@ func shutdown(srv *http.Server) {
 
 	if err := srv.Shutdown(ctx); err != nil {
 		log.Fatalf("server shutdown: %v", err)
+	}
+	if err := telemetry.Shutdown(ctx); err != nil {
+		log.Warnf("telemetry shutdown: %v", err)
 	}
 
 	log.Info("server stopped gracefully")

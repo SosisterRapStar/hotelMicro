@@ -7,12 +7,15 @@ import (
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
+
+	paperController "github.com/SosisterRapStar/LETI-paper/controller"
 	"github.com/SosisterRapStar/hotels/internal/adapter/controller"
 	"github.com/SosisterRapStar/hotels/internal/adapter/controller/middleware"
 	v1 "github.com/SosisterRapStar/hotels/internal/adapter/controller/v1"
 	adapterKafka "github.com/SosisterRapStar/hotels/internal/adapter/kafka"
 	"github.com/SosisterRapStar/hotels/internal/config"
 	infrakafka "github.com/SosisterRapStar/hotels/internal/infrastructure/kafka"
+	"github.com/SosisterRapStar/hotels/internal/infrastructure/telemetry"
 	"github.com/SosisterRapStar/hotels/internal/saga"
 )
 
@@ -49,8 +52,21 @@ func New(cfg *config.AppConfig) (*App, error) {
 		return nil, fmt.Errorf("create saga pubsub: %w", err)
 	}
 
+	if err := telemetry.Init(cfg); err != nil {
+		_ = rawDB.Close()
+		return nil, fmt.Errorf("init telemetry: %w", err)
+	}
+
 	ctx := context.Background()
-	hotelSaga, err := saga.InitHotelSaga(ctx, rawDB, sagaPubsub)
+
+	var sagaTracing *paperController.TracingConfig
+	if cfg.Tracing.Enabled {
+		sagaTracing = &paperController.TracingConfig{
+			Tracer:     telemetry.Tracer("hotels-saga"),
+			TracerName: "hotels",
+		}
+	}
+	hotelSaga, err := saga.InitHotelSaga(ctx, rawDB, sagaPubsub, sagaTracing)
 	if err != nil {
 		_ = rawDB.Close()
 		return nil, fmt.Errorf("init hotel saga: %w", err)
