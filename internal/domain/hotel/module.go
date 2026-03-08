@@ -12,30 +12,36 @@ type Repository interface {
 	CreateHotel(context.Context, CreateHotelInput) (*Hotel, error)
 	GetHotelByID(context.Context, string) (*Hotel, error)
 	ListHotels(context.Context, ListHotelsParams) ([]Hotel, error)
+	DeleteHotel(context.Context, string) error
 
 	CreateHotelRoom(context.Context, CreateHotelRoomInput) (*HotelRoom, error)
 	GetHotelRoomByID(context.Context, string) (*HotelRoom, error)
 	ListHotelRoomsByHotelID(context.Context, string, ListHotelRoomsParams) ([]HotelRoom, error)
+	DeleteHotelRoom(context.Context, string) error
 
 	CreateHotelBooking(context.Context, CreateHotelBookingInput) (*HotelBooking, error)
 	GetHotelBookingByID(context.Context, string) (*HotelBooking, error)
 	ListHotelBookings(context.Context, ListHotelBookingsParams) ([]HotelBooking, error)
 	UpdateHotelBookingStatus(context.Context, string, string) (*HotelBooking, error)
+	DeleteHotelBooking(context.Context, string) error
 }
 
 type Module interface {
 	CreateHotel(context.Context, CreateHotelInput) (*Hotel, error)
 	GetHotelByID(context.Context, string) (*Hotel, error)
 	ListHotels(context.Context, ListHotelsParams) ([]Hotel, error)
+	DeleteHotel(context.Context, string) error
 
 	CreateHotelRoom(context.Context, CreateHotelRoomInput) (*HotelRoom, error)
 	GetHotelRoomByID(context.Context, string) (*HotelRoom, error)
 	ListHotelRoomsByHotelID(context.Context, string, ListHotelRoomsParams) ([]HotelRoom, error)
+	DeleteHotelRoom(context.Context, string) error
 
 	CreateHotelBooking(context.Context, CreateHotelBookingInput) (*HotelBooking, error)
 	GetHotelBookingByID(context.Context, string) (*HotelBooking, error)
 	ListHotelBookings(context.Context, ListHotelBookingsParams) ([]HotelBooking, error)
 	UpdateHotelBookingStatus(context.Context, string, string) (*HotelBooking, error)
+	DeleteHotelBooking(context.Context, string) error
 }
 
 type module struct {
@@ -83,6 +89,16 @@ func (m *module) ListHotels(ctx context.Context, params ListHotelsParams) ([]Hot
 		return nil, fmt.Errorf("listing hotels: %w", err)
 	}
 	return items, nil
+}
+
+func (m *module) DeleteHotel(ctx context.Context, id string) error {
+	if id == "" {
+		return errors.New("id is required")
+	}
+	if err := m.repository.DeleteHotel(ctx, id); err != nil {
+		return fmt.Errorf("deleting hotel: %w", err)
+	}
+	return nil
 }
 
 func (m *module) CreateHotelRoom(ctx context.Context, input CreateHotelRoomInput) (*HotelRoom, error) {
@@ -133,6 +149,16 @@ func (m *module) ListHotelRoomsByHotelID(ctx context.Context, hotelID string, pa
 	return items, nil
 }
 
+func (m *module) DeleteHotelRoom(ctx context.Context, id string) error {
+	if id == "" {
+		return errors.New("id is required")
+	}
+	if err := m.repository.DeleteHotelRoom(ctx, id); err != nil {
+		return fmt.Errorf("deleting hotel room: %w", err)
+	}
+	return nil
+}
+
 func (m *module) CreateHotelBooking(ctx context.Context, input CreateHotelBookingInput) (*HotelBooking, error) {
 	if input.UserID == "" || input.HotelID == "" || input.RoomID == "" {
 		return nil, errors.New("user_id, hotel_id and room_id are required")
@@ -179,6 +205,16 @@ func (m *module) ListHotelBookings(ctx context.Context, params ListHotelBookings
 		return nil, fmt.Errorf("listing hotel bookings: %w", err)
 	}
 	return items, nil
+}
+
+func (m *module) DeleteHotelBooking(ctx context.Context, id string) error {
+	if id == "" {
+		return errors.New("id is required")
+	}
+	if err := m.repository.DeleteHotelBooking(ctx, id); err != nil {
+		return fmt.Errorf("deleting hotel booking: %w", err)
+	}
+	return nil
 }
 
 func (m *module) UpdateHotelBookingStatus(ctx context.Context, id, status string) (*HotelBooking, error) {

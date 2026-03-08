@@ -37,4 +37,4 @@ proto:
 
 .PHONY: swagger
 swagger:
-	go run github.com/swaggo/swag/cmd/swag@v1.8.1 init -g cmd/app.go -o internal/docs      
+	go run github.com/swaggo/swag/cmd/swag@v1.8.1 init -g cmd/app.go -o internal/docs --parseDependency --parseInternal

@@ -7,13 +7,16 @@ import (
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 
 	paperController "github.com/SosisterRapStar/LETI-paper/controller"
 	"github.com/SosisterRapStar/hotels/internal/adapter/controller"
 	"github.com/SosisterRapStar/hotels/internal/adapter/controller/middleware"
 	v1 "github.com/SosisterRapStar/hotels/internal/adapter/controller/v1"
 	adapterKafka "github.com/SosisterRapStar/hotels/internal/adapter/kafka"
+	adapterRepo "github.com/SosisterRapStar/hotels/internal/adapter/repository"
 	"github.com/SosisterRapStar/hotels/internal/config"
+	"github.com/SosisterRapStar/hotels/internal/domain/hotel"
 	infrakafka "github.com/SosisterRapStar/hotels/internal/infrastructure/kafka"
 	"github.com/SosisterRapStar/hotels/internal/infrastructure/telemetry"
 	"github.com/SosisterRapStar/hotels/internal/saga"
@@ -86,11 +89,19 @@ func New(cfg *config.AppConfig) (*App, error) {
 		return nil, fmt.Errorf("run saga pubsub: %w", err)
 	}
 
+	sqlxDB := sqlx.NewDb(rawDB, "mysql")
+	manager := adapterRepo.NewManager(sqlxDB)
+	hotelRepo := adapterRepo.NewHotelRepository(sqlxDB, manager)
+	hotelMod := hotel.NewModule(hotelRepo)
+
 	return &App{
 		Controller: &controller.Controller{
 			Middleware: middleware.NewMiddleware(cfg),
 			V1: v1.Controller{
-				Dummy: v1.NewDummyController(),
+				Dummy:   v1.NewDummyController(),
+				Hotel:   v1.NewHotelController(hotelMod),
+				Room:    v1.NewRoomController(hotelMod),
+				Booking: v1.NewBookingController(hotelMod),
 			},
 		},
 	}, nil

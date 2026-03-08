@@ -19,6 +19,8 @@ ORDER BY created_at DESC
 LIMIT ? OFFSET ?;
 `
 
+	deleteHotelQuery = `DELETE FROM hotels WHERE id = ?;`
+
 	createHotelRoomQuery = `
 INSERT INTO hotel_rooms (id, hotel_id, room_type, rooms_total, rooms_available, price)
 VALUES (?, ?, ?, ?, ?, ?);
@@ -37,6 +39,8 @@ WHERE hotel_id = ?
 ORDER BY id
 LIMIT ? OFFSET ?;
 `
+
+	deleteHotelRoomQuery = `DELETE FROM hotel_rooms WHERE id = ?;`
 
 	createHotelBookingQuery = `
 INSERT INTO hotel_bookings (booking_id, user_id, hotel_id, room_id, check_in, check_out, status)
@@ -61,4 +65,6 @@ UPDATE hotel_bookings
 SET status = ?, updated_at = CURRENT_TIMESTAMP
 WHERE booking_id = ?;
 `
+
+	deleteHotelBookingQuery = `DELETE FROM hotel_bookings WHERE booking_id = ?;`
 )

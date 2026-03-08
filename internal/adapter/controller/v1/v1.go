@@ -1,5 +1,8 @@
 package v1
 
 type Controller struct {
-	Dummy DummyController
+	Dummy    DummyController
+	Hotel    HotelController
+	Room     RoomController
+	Booking  BookingController
 }

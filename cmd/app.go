@@ -1,3 +1,10 @@
+// Package main — точка входа сервиса hotels (бронирование отелей, шаг саги).
+//
+// @title           Hotels API
+// @version         1.0
+// @description     API сервиса отелей: бронирование номеров, участие в choreographic saga.
+// @host            localhost:8080
+// @BasePath        /api/v1
 package main
 
 import (

@@ -70,6 +70,22 @@ func (r *HotelRepository) ListHotels(ctx context.Context, params hotel.ListHotel
 	return rows, nil
 }
 
+func (r *HotelRepository) DeleteHotel(ctx context.Context, id string) error {
+	execer := r.execer(ctx)
+	result, err := execer.ExecContext(ctx, deleteHotelQuery, id)
+	if err != nil {
+		return fmt.Errorf("executing delete hotel query: %w", err)
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("reading rows affected: %w", err)
+	}
+	if affected == 0 {
+		return hotel.ErrHotelNotFound
+	}
+	return nil
+}
+
 func (r *HotelRepository) CreateHotelRoom(ctx context.Context, input hotel.CreateHotelRoomInput) (*hotel.HotelRoom, error) {
 	id := uuid.New().String()
 	execer := r.execer(ctx)
@@ -104,6 +120,22 @@ func (r *HotelRepository) ListHotelRoomsByHotelID(ctx context.Context, hotelID s
 		return nil, fmt.Errorf("executing list hotel rooms query: %w", err)
 	}
 	return rows, nil
+}
+
+func (r *HotelRepository) DeleteHotelRoom(ctx context.Context, id string) error {
+	execer := r.execer(ctx)
+	result, err := execer.ExecContext(ctx, deleteHotelRoomQuery, id)
+	if err != nil {
+		return fmt.Errorf("executing delete hotel room query: %w", err)
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("reading rows affected: %w", err)
+	}
+	if affected == 0 {
+		return hotel.ErrHotelRoomNotFound
+	}
+	return nil
 }
 
 func (r *HotelRepository) CreateHotelBooking(ctx context.Context, input hotel.CreateHotelBookingInput) (*hotel.HotelBooking, error) {
@@ -161,4 +193,20 @@ func (r *HotelRepository) UpdateHotelBookingStatus(ctx context.Context, id, stat
 		return nil, fmt.Errorf("selecting updated hotel booking: %w", err)
 	}
 	return &row, nil
+}
+
+func (r *HotelRepository) DeleteHotelBooking(ctx context.Context, id string) error {
+	execer := r.execer(ctx)
+	result, err := execer.ExecContext(ctx, deleteHotelBookingQuery, id)
+	if err != nil {
+		return fmt.Errorf("executing delete hotel booking query: %w", err)
+	}
+	affected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("reading rows affected: %w", err)
+	}
+	if affected == 0 {
+		return hotel.ErrHotelBookingNotFound
+	}
+	return nil
 }

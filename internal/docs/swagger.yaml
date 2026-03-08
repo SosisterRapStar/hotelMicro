@@ -1,0 +1,483 @@
+basePath: /api/v1
+definitions:
+  github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.createHotelBookingRequest:
+    properties:
+      check_in:
+        description: YYYY-MM-DD
+        type: string
+      check_out:
+        description: YYYY-MM-DD
+        type: string
+      hotel_id:
+        type: string
+      room_id:
+        type: string
+      status:
+        type: string
+      user_id:
+        type: string
+    type: object
+  github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.createHotelRequest:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      name:
+        type: string
+    type: object
+  github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.createHotelRoomRequest:
+    properties:
+      price:
+        type: integer
+      room_type:
+        type: string
+      rooms_available:
+        type: integer
+      rooms_total:
+        type: integer
+    type: object
+  github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  hotel.Hotel:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  hotel.HotelBooking:
+    properties:
+      booking_id:
+        type: string
+      check_in:
+        type: string
+      check_out:
+        type: string
+      created_at:
+        type: string
+      hotel_id:
+        type: string
+      room_id:
+        type: string
+      status:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  hotel.HotelRoom:
+    properties:
+      hotel_id:
+        type: string
+      id:
+        type: string
+      price:
+        type: integer
+      room_type:
+        type: string
+      rooms_available:
+        type: integer
+      rooms_total:
+        type: integer
+    type: object
+  internal_adapter_controller_v1.createHotelBookingRequest:
+    properties:
+      check_in:
+        description: YYYY-MM-DD
+        type: string
+      check_out:
+        description: YYYY-MM-DD
+        type: string
+      hotel_id:
+        type: string
+      room_id:
+        type: string
+      status:
+        type: string
+      user_id:
+        type: string
+    type: object
+  internal_adapter_controller_v1.createHotelRequest:
+    properties:
+      address:
+        type: string
+      city:
+        type: string
+      name:
+        type: string
+    type: object
+  internal_adapter_controller_v1.createHotelRoomRequest:
+    properties:
+      price:
+        type: integer
+      room_type:
+        type: string
+      rooms_available:
+        type: integer
+      rooms_total:
+        type: integer
+    type: object
+  internal_adapter_controller_v1.errorResponse:
+    properties:
+      message:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: 'API сервиса отелей: бронирование номеров, участие в choreographic
+    saga.'
+  title: Hotels API
+  version: "1.0"
+paths:
+  /bookings:
+    get:
+      description: Список бронирований
+      parameters:
+      - description: Лимит (default 20)
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/hotel.HotelBooking'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+      summary: List hotel bookings
+      tags:
+      - bookings
+    post:
+      consumes:
+      - application/json
+      description: Создаёт бронирование номера (check_in, check_out в формате YYYY-MM-DD)
+      parameters:
+      - description: Данные бронирования
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.createHotelBookingRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/hotel.HotelBooking'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+      summary: Create hotel booking
+      tags:
+      - bookings
+  /bookings/{id}:
+    delete:
+      description: Удаляет бронирование
+      parameters:
+      - description: ID бронирования (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+      summary: Delete booking
+      tags:
+      - bookings
+    get:
+      description: Возвращает бронирование по ID
+      parameters:
+      - description: ID бронирования (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hotel.HotelBooking'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+      summary: Get booking by ID
+      tags:
+      - bookings
+  /dummy:
+    get:
+      description: Возвращает 200 OK. Используется для проверки доступности сервиса.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ""
+      summary: Dummy endpoint
+      tags:
+      - v1
+  /hotels:
+    get:
+      description: Список отелей с limit/offset
+      parameters:
+      - description: Лимит (default 20)
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/hotel.Hotel'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_adapter_controller_v1.errorResponse'
+      summary: List hotels
+      tags:
+      - hotels
+    post:
+      consumes:
+      - application/json
+      description: Создаёт новый отель
+      parameters:
+      - description: Данные отеля
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/internal_adapter_controller_v1.createHotelRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/hotel.Hotel'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_adapter_controller_v1.errorResponse'
+      summary: Create hotel
+      tags:
+      - hotels
+  /hotels/{hotelId}/rooms:
+    get:
+      description: Список номеров отеля
+      parameters:
+      - description: ID отеля
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Лимит (default 20)
+        in: query
+        name: limit
+        type: integer
+      - description: Смещение (default 0)
+        in: query
+        name: offset
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/hotel.HotelRoom'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+      summary: List hotel rooms
+      tags:
+      - rooms
+    post:
+      consumes:
+      - application/json
+      description: Создаёт номер в указанном отеле
+      parameters:
+      - description: ID отеля
+        in: path
+        name: hotelId
+        required: true
+        type: string
+      - description: Данные номера
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.createHotelRoomRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/hotel.HotelRoom'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+      summary: Create hotel room
+      tags:
+      - rooms
+  /hotels/{id}:
+    delete:
+      description: Удаляет отель. Сначала нужно удалить номера и бронирования.
+      parameters:
+      - description: ID отеля (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_adapter_controller_v1.errorResponse'
+      summary: Delete hotel
+      tags:
+      - hotels
+    get:
+      description: Возвращает отель по ID
+      parameters:
+      - description: ID отеля (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hotel.Hotel'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/internal_adapter_controller_v1.errorResponse'
+      summary: Get hotel by ID
+      tags:
+      - hotels
+  /rooms/{id}:
+    delete:
+      description: Удаляет номер. Сначала удалите бронирования этого номера.
+      parameters:
+      - description: ID номера (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: ""
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+      summary: Delete room
+      tags:
+      - rooms
+    get:
+      description: Возвращает номер по ID
+      parameters:
+      - description: ID номера (UUID)
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/hotel.HotelRoom'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/github.com_SosisterRapStar_hotels_internal_adapter_controller_v1.errorResponse'
+      summary: Get room by ID
+      tags:
+      - rooms
+swagger: "2.0"
