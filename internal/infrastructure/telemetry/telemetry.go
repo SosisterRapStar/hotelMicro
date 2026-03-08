@@ -23,6 +23,10 @@ func Init(cfg *config.AppConfig) error {
 	if cfg == nil || !cfg.Tracing.Enabled {
 		return nil
 	}
+	if provider != nil {
+		_ = provider.Shutdown(context.Background())
+		provider = nil
+	}
 
 	exporter, err := newOTLPExporter(cfg)
 	if err != nil {
