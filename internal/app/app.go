@@ -1,10 +1,19 @@
 package app
 
 import (
+	"context"
+	"database/sql"
+	"fmt"
+	"strings"
+
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/SosisterRapStar/hotels/internal/adapter/controller"
 	"github.com/SosisterRapStar/hotels/internal/adapter/controller/middleware"
 	v1 "github.com/SosisterRapStar/hotels/internal/adapter/controller/v1"
+	adapterKafka "github.com/SosisterRapStar/hotels/internal/adapter/kafka"
 	"github.com/SosisterRapStar/hotels/internal/config"
+	infrakafka "github.com/SosisterRapStar/hotels/internal/infrastructure/kafka"
+	"github.com/SosisterRapStar/hotels/internal/saga"
 )
 
 type App struct {
@@ -12,6 +21,55 @@ type App struct {
 }
 
 func New(cfg *config.AppConfig) (*App, error) {
+	rawDB, err := sql.Open("mysql", cfg.Repository.DSNMySQL())
+	if err != nil {
+		return nil, fmt.Errorf("opening mysql connection: %w", err)
+	}
+	rawDB.SetMaxIdleConns(cfg.Repository.MaxIdleConn)
+	rawDB.SetMaxOpenConns(cfg.Repository.MaxOpenConn)
+	rawDB.SetConnMaxIdleTime(cfg.Repository.MaxIdleLifetime)
+	rawDB.SetConnMaxLifetime(cfg.Repository.MaxOpenLifetime)
+
+	brokers := cfg.Kafka.Brokers
+	if len(brokers) == 0 && cfg.Kafka.URL != "" {
+		brokers = strings.Split(cfg.Kafka.URL, ",")
+	}
+
+	kafkaCfg := &infrakafka.Config{
+		Brokers:          brokers,
+		GroupID:          cfg.Kafka.GroupID,
+		AckPolicy:        cfg.Kafka.Producer.AckPolicy,
+		RetryMax:         cfg.Kafka.Producer.RetryMax,
+		AutoCommitEnable: cfg.Kafka.Consumer.AutoCommitEnable,
+		MaxWaitTime:      cfg.Kafka.Consumer.MaxWaitTime,
+	}
+	sagaPubsub, err := adapterKafka.NewSagaPubsub(kafkaCfg)
+	if err != nil {
+		_ = rawDB.Close()
+		return nil, fmt.Errorf("create saga pubsub: %w", err)
+	}
+
+	ctx := context.Background()
+	hotelSaga, err := saga.InitHotelSaga(ctx, rawDB, sagaPubsub)
+	if err != nil {
+		_ = rawDB.Close()
+		return nil, fmt.Errorf("init hotel saga: %w", err)
+	}
+
+	if err := hotelSaga.Controller.Register(saga.TopicFlightReserved, hotelSaga.StepHotelReserve); err != nil {
+		_ = rawDB.Close()
+		return nil, fmt.Errorf("register %s step: %w", saga.TopicFlightReserved, err)
+	}
+
+	if err := hotelSaga.Controller.Init(ctx); err != nil {
+		_ = rawDB.Close()
+		return nil, fmt.Errorf("init hotel saga controller: %w", err)
+	}
+	if err := sagaPubsub.Run(ctx); err != nil {
+		_ = rawDB.Close()
+		return nil, fmt.Errorf("run saga pubsub: %w", err)
+	}
+
 	return &App{
 		Controller: &controller.Controller{
 			Middleware: middleware.NewMiddleware(cfg),

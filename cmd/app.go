@@ -18,16 +18,7 @@ import (
 const shutdownTimeout = 10 * time.Second
 
 func main() {
-	cfg := &config.AppConfig{
-		Server: config.Server{
-			Address: ":8080",
-		},
-		API: config.API{
-			Timeout:           30 * time.Second,
-			ReadHeaderTimeout: 5 * time.Second,
-		},
-	}
-
+	cfg := config.MustLoad("config.yaml")
 	runServer(cfg)
 }
 

@@ -21,7 +21,7 @@ type Config struct {
 	MaxWaitTime      time.Duration
 }
 
-// NewConsumerGroup создаёт sarama.ConsumerGroup по конфигурации
+// NewConsumerGroup создаёт sarama.ConsumerGroup по конфигурации.
 func NewConsumerGroup(cfg *Config) (sarama.ConsumerGroup, error) {
 	if len(cfg.Brokers) == 0 {
 		return nil, fmt.Errorf("kafka brokers are required")

@@ -17,7 +17,10 @@ require (
 	google.golang.org/protobuf v1.36.11
 )
 
-require filippo.io/edwards25519 v1.1.0 // indirect
+require (
+	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/bytedance/gopkg v0.1.3 // indirect
+)
 
 require (
 	github.com/BurntSushi/toml v1.2.1 // indirect
