@@ -24,7 +24,7 @@ prometheus:
 
 repository:
   hosts: "localhost:3306"
-  dbname: "mysql"
+  dbname: "hotels_db"
   user: "mysql"
   password: "mysql"
   max_idle_conn: 5

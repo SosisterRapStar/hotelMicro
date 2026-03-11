@@ -21,6 +21,9 @@ migration-down:
 migration-force:
 	migrate -path migrations -database "$(MIGRATE_DSN)" force $(version)
 
+.PHONY: seed
+seed: migration-up
+
 .PHONY: run
 run:
 	go run ./cmd/app.go

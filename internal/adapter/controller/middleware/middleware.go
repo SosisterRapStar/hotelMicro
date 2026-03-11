@@ -17,12 +17,16 @@ type Middleware struct {
 	Timeout    MiddlewareFunc
 }
 
-func NewMiddleware(
-	cfg *config.AppConfig,
-) Middleware {
+func NewMiddleware(cfg *config.AppConfig) Middleware {
 	return Middleware{
-		Logger: Logger,
+		Logger:     Logger,
+		Monitoring: passthrough,
 	}
+}
+
+// passthrough — заглушка, не меняет запрос (Monitoring можно заменить на метрики позже).
+func passthrough(h http.Handler) http.Handler {
+	return h
 }
 
 func Logger(h http.Handler) http.Handler {

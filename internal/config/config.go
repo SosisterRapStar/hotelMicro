@@ -99,6 +99,6 @@ func (r *Repository) DSNMySQL() string {
 		parts := strings.Split(r.Hosts, ",")
 		host = strings.TrimSpace(parts[0])
 	}
-	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&charset=utf8mb4",
+	return fmt.Sprintf("%s:%s@tcp(%s)/%s?parseTime=true&charset=utf8mb4&multiStatements=true",
 		r.User, r.Password, host, r.Dbname)
 }

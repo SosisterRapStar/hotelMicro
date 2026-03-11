@@ -1,0 +1,8 @@
+-- Remove seed data for hotels service
+
+DELETE FROM hotel_rooms
+WHERE id = '55555555-5555-5555-5555-555555555555';
+
+DELETE FROM hotels
+WHERE id = '44444444-4444-4444-4444-444444444444';
+
