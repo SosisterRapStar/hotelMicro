@@ -8,7 +8,7 @@ import (
 
 	"github.com/IBM/sarama"
 
-	"github.com/SosisterRapStar/LETI-paper/message"
+	"github.com/SosisterRapStar/cliros/message"
 
 	infrakafka "github.com/SosisterRapStar/hotels/internal/infrastructure/kafka"
 )

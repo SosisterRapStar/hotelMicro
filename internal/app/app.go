@@ -9,7 +9,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 
-	paperController "github.com/SosisterRapStar/LETI-paper/controller"
+	paperController "github.com/SosisterRapStar/cliros/controller"
 	"github.com/SosisterRapStar/hotels/internal/adapter/controller"
 	"github.com/SosisterRapStar/hotels/internal/adapter/controller/middleware"
 	v1 "github.com/SosisterRapStar/hotels/internal/adapter/controller/v1"
